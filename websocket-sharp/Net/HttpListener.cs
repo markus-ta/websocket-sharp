@@ -108,7 +108,7 @@ namespace WebSocketSharp.Net
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpListener"/> class.
     /// </summary>
-    public HttpListener ()
+    public HttpListener (string description)
     {
       _authSchemes = AuthenticationSchemes.Anonymous;
       _contextQueue = new Queue<HttpListenerContext> ();
@@ -116,7 +116,7 @@ namespace WebSocketSharp.Net
       _contextRegistry = new LinkedList<HttpListenerContext> ();
       _contextRegistrySync = ((ICollection) _contextRegistry).SyncRoot;
 
-      _log = new Logger ();
+      _log = new Logger (description);
       _objectName = GetType ().ToString ();
       _prefixes = new HttpListenerPrefixCollection (this);
       _sync = new object ();

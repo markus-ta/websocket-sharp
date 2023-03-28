@@ -18,7 +18,7 @@ namespace Example3
       // create a new instance with the 'secure' parameter set to true or
       // with an https scheme HTTP URL.
 
-      var httpsv = new HttpServer (4649);
+      var httpsv = new HttpServer ("", 4649);
       //var httpsv = new HttpServer (5963, true);
 
       //var httpsv = new HttpServer (System.Net.IPAddress.Any, 4649);

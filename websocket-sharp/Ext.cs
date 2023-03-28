@@ -697,7 +697,16 @@ namespace WebSocketSharp
           if (length < bufferLength)
             bufferLength = (int) length;
 
-          var nread = stream.Read (buff, 0, bufferLength);
+          var nread = 0;
+
+          try
+          {
+            nread = stream.Read (buff, 0, bufferLength);
+          }
+          catch (ObjectDisposedException)
+          {
+            // Ignored
+          }
 
           if (nread <= 0) {
             if (retry < _maxRetry) {
@@ -738,13 +747,30 @@ namespace WebSocketSharp
       callback =
         ar => {
           try {
-            var nread = stream.EndRead (ar);
+
+            int nread;
+
+            try
+            {
+              nread = stream.EndRead (ar);
+            }
+            catch (ObjectDisposedException)
+            {
+              return;
+            }
 
             if (nread <= 0) {
               if (retry < _maxRetry) {
                 retry++;
 
-                stream.BeginRead (ret, offset, length, callback, null);
+                try
+                {
+                  stream.BeginRead (ret, offset, length, callback, null);
+                }
+                catch (ObjectDisposedException)
+                {
+                  return;
+                }
 
                 return;
               }
@@ -767,7 +793,14 @@ namespace WebSocketSharp
             offset += nread;
             length -= nread;
 
-            stream.BeginRead (ret, offset, length, callback, null);
+            try
+            {
+              stream.BeginRead (ret, offset, length, callback, null);
+            }
+            catch (ObjectDisposedException)
+            {
+              // ignored
+            }
           }
           catch (Exception ex) {
             if (error != null)

@@ -90,9 +90,9 @@ namespace WebSocketSharp.Server
     /// The new instance listens for incoming requests on
     /// <see cref="System.Net.IPAddress.Any"/> and port 80.
     /// </remarks>
-    public HttpServer ()
+    public HttpServer (string description)
     {
-      init ("*", System.Net.IPAddress.Any, 80, false);
+      init(description, "*", System.Net.IPAddress.Any, 80, false);
     }
 
     /// <summary>
@@ -115,8 +115,8 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public HttpServer (int port)
-      : this (port, port == 443)
+    public HttpServer (string description, int port)
+      : this (description, port, port == 443)
     {
     }
 
@@ -156,7 +156,7 @@ namespace WebSocketSharp.Server
     ///   <paramref name="url"/> is invalid.
     ///   </para>
     /// </exception>
-    public HttpServer (string url)
+    public HttpServer (string description, string url)
     {
       if (url == null)
         throw new ArgumentNullException ("url");
@@ -185,7 +185,7 @@ namespace WebSocketSharp.Server
         throw new ArgumentException (msg, "url");
       }
 
-      init (host, addr, uri.Port, uri.Scheme == "https");
+      init(description, host, addr, uri.Port, uri.Scheme == "https");
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public HttpServer (int port, bool secure)
+    public HttpServer (string description, int port, bool secure)
     {
       if (!port.IsPortNumber ()) {
         var msg = "Less than 1 or greater than 65535.";
@@ -215,7 +215,7 @@ namespace WebSocketSharp.Server
         throw new ArgumentOutOfRangeException ("port", msg);
       }
 
-      init ("*", System.Net.IPAddress.Any, port, secure);
+      init (description, "*", System.Net.IPAddress.Any, port, secure);
     }
 
     /// <summary>
@@ -248,8 +248,8 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public HttpServer (System.Net.IPAddress address, int port)
-      : this (address, port, port == 443)
+    public HttpServer (string description, System.Net.IPAddress address, int port)
+      : this (description, address, port, port == 443)
     {
     }
 
@@ -282,7 +282,7 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public HttpServer (System.Net.IPAddress address, int port, bool secure)
+    public HttpServer (string description, System.Net.IPAddress address, int port, bool secure)
     {
       if (address == null)
         throw new ArgumentNullException ("address");
@@ -299,7 +299,7 @@ namespace WebSocketSharp.Server
         throw new ArgumentOutOfRangeException ("port", msg);
       }
 
-      init (address.ToString (true), address, port, secure);
+      init(description, address.ToString(true), address, port, secure);
     }
 
     #endregion
@@ -815,11 +815,11 @@ namespace WebSocketSharp.Server
       return true;
     }
 
-    private static HttpListener createListener (
+    private static HttpListener createListener (string description,
       string hostname, int port, bool secure
     )
     {
-      var lsnr = new HttpListener ();
+      var lsnr = new HttpListener (description);
 
       var schm = secure ? "https" : "http";
       var pref = String.Format ("{0}://{1}:{2}/", schm, hostname, port);
@@ -829,7 +829,7 @@ namespace WebSocketSharp.Server
       return lsnr;
     }
 
-    private void init (
+    private void init (string description,
       string hostname, System.Net.IPAddress address, int port, bool secure
     )
     {
@@ -839,7 +839,7 @@ namespace WebSocketSharp.Server
       _secure = secure;
 
       _docRootPath = "./Public";
-      _listener = createListener (_hostname, _port, _secure);
+      _listener = createListener (description, _hostname, _port, _secure);
       _log = _listener.Log;
       _services = new WebSocketServiceManager (_log);
       _sync = new object ();

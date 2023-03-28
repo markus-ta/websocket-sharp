@@ -98,11 +98,11 @@ namespace WebSocketSharp.Server
     /// The new instance listens for incoming handshake requests on
     /// <see cref="System.Net.IPAddress.Any"/> and port 80.
     /// </remarks>
-    public WebSocketServer ()
+    public WebSocketServer (string description)
     {
       var addr = System.Net.IPAddress.Any;
 
-      init (addr.ToString (), addr, 80, false);
+      init (description, addr.ToString (), addr, 80, false);
     }
 
     /// <summary>
@@ -125,8 +125,8 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public WebSocketServer (int port)
-      : this (port, port == 443)
+    public WebSocketServer (string description, int port)
+      : this (description, port, port == 443)
     {
     }
 
@@ -166,7 +166,7 @@ namespace WebSocketSharp.Server
     ///   <paramref name="url"/> is invalid.
     ///   </para>
     /// </exception>
-    public WebSocketServer (string url)
+    public WebSocketServer (string description, string url)
     {
       if (url == null)
         throw new ArgumentNullException ("url");
@@ -195,7 +195,7 @@ namespace WebSocketSharp.Server
         throw new ArgumentException (msg, "url");
       }
 
-      init (host, addr, uri.Port, uri.Scheme == "wss");
+      init(description, host, addr, uri.Port, uri.Scheme == "wss");
     }
 
     /// <summary>
@@ -217,7 +217,7 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public WebSocketServer (int port, bool secure)
+    public WebSocketServer (string description, int port, bool secure)
     {
       if (!port.IsPortNumber ()) {
         var msg = "Less than 1 or greater than 65535.";
@@ -227,7 +227,7 @@ namespace WebSocketSharp.Server
 
       var addr = System.Net.IPAddress.Any;
 
-      init (addr.ToString (), addr, port, secure);
+      init (description, addr.ToString (), addr, port, secure);
     }
 
     /// <summary>
@@ -260,8 +260,8 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public WebSocketServer (System.Net.IPAddress address, int port)
-      : this (address, port, port == 443)
+    public WebSocketServer (string description, System.Net.IPAddress address, int port)
+      : this (description, address, port, port == 443)
     {
     }
 
@@ -294,7 +294,7 @@ namespace WebSocketSharp.Server
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="port"/> is less than 1 or greater than 65535.
     /// </exception>
-    public WebSocketServer (System.Net.IPAddress address, int port, bool secure)
+    public WebSocketServer (string description, System.Net.IPAddress address, int port, bool secure)
     {
       if (address == null)
         throw new ArgumentNullException ("address");
@@ -311,7 +311,7 @@ namespace WebSocketSharp.Server
         throw new ArgumentOutOfRangeException ("port", msg);
       }
 
-      init (address.ToString (), address, port, secure);
+      init (description, address.ToString (), address, port, secure);
     }
 
     #endregion
@@ -720,7 +720,7 @@ namespace WebSocketSharp.Server
       return _sslConfig;
     }
 
-    private void init (
+    private void init (string description,
       string hostname, System.Net.IPAddress address, int port, bool secure
     )
     {
@@ -732,7 +732,7 @@ namespace WebSocketSharp.Server
       _authSchemes = AuthenticationSchemes.Anonymous;
       _dnsStyle = Uri.CheckHostName (hostname) == UriHostNameType.Dns;
       _listener = new TcpListener (address, port);
-      _log = new Logger ();
+      _log = new Logger (description);
       _services = new WebSocketServiceManager (_log);
       _sync = new object ();
     }

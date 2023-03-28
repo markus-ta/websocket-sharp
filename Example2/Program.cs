@@ -17,7 +17,7 @@ namespace Example2
       // create a new instance with the 'secure' parameter set to true or
       // with a wss scheme WebSocket URL.
 
-      var wssv = new WebSocketServer (4649);
+      var wssv = new WebSocketServer ("", 4649);
       //var wssv = new WebSocketServer (5963, true);
 
       //var wssv = new WebSocketServer (System.Net.IPAddress.Any, 4649);
