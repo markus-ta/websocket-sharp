@@ -58,6 +58,7 @@ namespace WebSocketSharp
     private volatile LogLevel       _level;
     private Action<LogData, string> _output;
     private object                  _sync;
+    private static string           _description;
 
     #endregion
 
@@ -69,8 +70,8 @@ namespace WebSocketSharp
     /// <remarks>
     /// This constructor initializes the logging level with the Error level.
     /// </remarks>
-    public Logger ()
-      : this (LogLevel.Error, null, null)
+    public Logger (string description)
+      : this (description, LogLevel.Error, null, null)
     {
     }
 
@@ -82,8 +83,8 @@ namespace WebSocketSharp
     /// One of the <see cref="LogLevel"/> enum values that specifies
     /// the logging level.
     /// </param>
-    public Logger (LogLevel level)
-      : this (level, null, null)
+    public Logger (string description, LogLevel level)
+      : this (description, level, null, null)
     {
     }
 
@@ -103,8 +104,9 @@ namespace WebSocketSharp
     /// An <see cref="T:System.Action{LogData, string}"/> that specifies
     /// the delegate used to output a log.
     /// </param>
-    public Logger (LogLevel level, string file, Action<LogData, string> output)
+    public Logger (string description, LogLevel level, string file, Action<LogData, string> output)
     {
+      _description = description;
       _level = level;
       _file = file;
       _output = output ?? defaultOutput;
@@ -194,7 +196,7 @@ namespace WebSocketSharp
 
     private static void defaultOutput (LogData data, string path)
     {
-      var val = data.ToString ();
+      var val = _description + data.ToString ();
 
       Console.WriteLine (val);
 
@@ -218,7 +220,7 @@ namespace WebSocketSharp
                        LogLevel.Fatal, new StackFrame (0, true), ex.Message
                      );
 
-          Console.WriteLine (data.ToString ());
+          Console.WriteLine (_description + data.ToString ());
         }
       }
     }

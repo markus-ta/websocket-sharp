@@ -119,6 +119,7 @@ namespace WebSocketSharp
     private Uri                            _uri;
     private const string                   _version = "13";
     private TimeSpan                       _waitTime;
+    private string                         _logHeader;
 
     #endregion
 
@@ -254,8 +255,10 @@ namespace WebSocketSharp
     ///   <paramref name="protocols"/> contains a value twice.
     ///   </para>
     /// </exception>
-    public WebSocket (string url, params string[] protocols)
+    public WebSocket (string description, string url, params string[] protocols)
     {
+      _logHeader = $"[WebSocket {description} ]";
+      
       if (url == null)
         throw new ArgumentNullException ("url");
 
@@ -276,7 +279,7 @@ namespace WebSocketSharp
 
       _base64Key = CreateBase64Key ();
       _client = true;
-      _log = new Logger ();
+      _log = new Logger (description);
       _message = messagec;
       _retryCountForConnect = -1;
       _secure = _uri.Scheme == "wss";
